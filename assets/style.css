@@ -1,0 +1,137 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Roboto+Mono:wght@400;700&display=swap');
+
+
+/* ========================= */
+/* MAIN SCREEN */
+/* ========================= */
+
+.stApp {
+
+    background:#121214;
+
+    color:#FFFFFF;
+
+    font-family:"Roboto Mono", monospace;
+
+}
+
+
+.block-container {
+
+    max-width:1100px;
+
+}
+
+
+/* ========================= */
+/* TEXT */
+/* ========================= */
+
+
+h1,
+h2,
+h3 {
+
+    font-family:"Press Start 2P", monospace !important;
+
+    color:#FFFFFF !important;
+
+}
+
+
+p,
+span,
+label {
+
+    color:#A0A0AB !important;
+
+}
+
+
+/* ========================= */
+/* HEADER */
+/* ========================= */
+
+/* PIXEL STITCH STUDIO */
+.pixel-logo {
+
+    font-family:"Press Start 2P", monospace;
+
+    color:#00F5D4;
+
+    font-size:28px;
+
+    letter-spacing:2px;
+
+    text-shadow:
+    3px 3px #FF007F;
+
+}
+
+/* SYSTEM ONLINE // MVP v0.1 */
+.pixel-version {
+
+    margin-top:15px;
+
+    color:#A0A0AB;
+
+    font-family:"Roboto Mono", monospace;
+
+}
+
+
+/* ========================= */
+/* скрытый UPLOAD TEXT */
+/* ========================= */
+
+
+.upload-title,
+.upload-subtitle {
+
+    display:none !important;
+
+}
+
+
+/* ========================= */
+/* FILE UPLOADER */
+/* ========================= */
+
+
+[data-testid="stFileUploader"] {
+
+    font-family:"Roboto Mono", monospace;
+
+}
+
+
+[data-testid="stFileUploader"] section {
+
+    background:#1E1E24 !important;
+
+}
+
+
+[data-testid="stFileUploader"] button {
+
+    background:#1E1E24 !important;
+
+    color:#FF007F !important;
+
+    border:3px solid #FF007F !important;
+
+    font-family:"Press Start 2P", monospace !important;
+
+}
+
+
+/* ========================= */
+/* IMAGE */
+/* ========================= */
+
+
+img {
+
+    image-rendering:pixelated;
+
+}
