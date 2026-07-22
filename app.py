@@ -14,6 +14,8 @@ from core.pixel_core import (
     get_palette_stats,
 )
 
+from services.renderer import render_scheme_with_grid
+
 st.set_page_config(
     page_title="Pixel Stitch Studio",
     page_icon="🧵",
@@ -84,19 +86,14 @@ if uploaded_file is not None:
 
             palette_stats = get_palette_stats(processed_image)
 
-            st.subheader("Исходное изображение")
-
-            st.image(
-                image,
-                use_container_width=True
-            )
-
             st.subheader("Обработанная схема")
 
+            scheme_with_grid = render_scheme_with_grid(processed_image)
+
             st.image(
-                processed_image,
+                scheme_with_grid,
                 use_container_width=True
-)
+            )
             
             st.subheader("Размер схемы")
 
