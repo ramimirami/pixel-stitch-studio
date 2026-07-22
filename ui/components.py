@@ -26,6 +26,31 @@ def render_header():
         unsafe_allow_html=True
     )
 
+# =========================
+# STATUS INDICATOR
+# =========================
+
+def render_status(status):
+
+    statuses = {
+        "ready": "SYSTEM READY",
+        "uploaded": "IMAGE LOADED - PROCESSING",
+        "done": "PROCESS COMPLETE",
+    }
+
+    text = statuses.get(status, "SYSTEM UNKNOWN")
+
+    st.markdown(
+        f"""
+        <div class="status-line">
+            <span class="status-dot"></span>
+            <span class="status-text">
+                {text}
+            </span>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
 # =========================
 # UPLOAD PANEL

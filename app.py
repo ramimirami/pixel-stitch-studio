@@ -1,7 +1,12 @@
 import streamlit as st
 from PIL import Image, UnidentifiedImageError
 
-from ui.components import render_header, render_upload_panel, render_stats_panel
+from ui.components import (
+    render_header,
+    render_upload_panel,
+    render_stats_panel,
+    render_status,
+)
 
 from core.pixel_core import (
     detect_grid_size,
@@ -30,6 +35,15 @@ render_header()
 
 uploaded_file = render_upload_panel()
 
+status_placeholder = st.empty()
+
+if uploaded_file is None:
+    with status_placeholder:
+        render_status("ready")
+
+else:
+    with status_placeholder:
+        render_status("uploaded")
 
 MAX_FILE_SIZE_MB = 10
 
@@ -65,9 +79,10 @@ if uploaded_file is not None:
                 grid_height,
             )
 
-            palette_stats = get_palette_stats(processed_image)
+            with status_placeholder:
+                render_status("done")
 
-            st.success("Изображение успешно загружено")
+            palette_stats = get_palette_stats(processed_image)
 
             st.subheader("Исходное изображение")
 

@@ -319,3 +319,58 @@ img {
     font-weight:600;
 
 }
+
+/* ========================= */
+/* STATUS INDICATOR */
+/* ========================= */
+
+.status-line {
+
+    display:flex;
+    align-items:center;
+    gap:12px;
+
+    margin:20px 0;
+
+    font-family:"Roboto Mono", monospace;
+    font-size:12px;
+
+    letter-spacing:1px;
+
+}
+
+
+.status-dot {
+
+    width:10px;
+    height:10px;
+
+    background:#00F5D4;
+
+    animation:pulse-status 1s infinite;
+
+}
+
+
+.status-text {
+
+    color:#A0A0AB;
+
+}
+
+
+@keyframes pulse-status {
+
+    0% {
+        opacity:1;
+    }
+
+    50% {
+        opacity:.3;
+    }
+
+    100% {
+        opacity:1;
+    }
+
+}
