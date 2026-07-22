@@ -72,6 +72,7 @@ if uploaded_file is not None:
 
             image = Image.open(uploaded_file)
 
+            image = image.convert("RGB")
             gray_image = image.convert("L")
 
             cell_size, grid_width, grid_height = detect_grid_size(gray_image)
