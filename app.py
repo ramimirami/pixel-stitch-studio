@@ -65,6 +65,8 @@ if uploaded_file is not None:
                 grid_height,
             )
 
+            palette_stats = get_palette_stats(processed_image)
+
             st.success("Изображение успешно загружено")
 
             st.subheader("Исходное изображение")
@@ -88,6 +90,30 @@ if uploaded_file is not None:
             st.write(f"Ширина: {grid_width}")
             st.write(f"Высота: {grid_height}")
 
+            st.divider()
+
+            st.subheader("Палитра")
+            for row_start in range(0, len(palette_stats), 4):
+
+                columns = st.columns(4)
+
+                for column, color in zip(columns, palette_stats[row_start:row_start + 4]):
+
+                    with column:
+
+                        st.markdown(
+                            f"""
+                            <div class="palette-color"
+                                style="background:{color['hex']};">
+                            </div>
+                            """,
+                            unsafe_allow_html=True,
+                        )
+
+                        st.markdown(
+                            f"**{color['hex'].upper()}** · {color['percentage']:.1f}%"
+                        )
+            
         except UnidentifiedImageError:
 
             st.error(
