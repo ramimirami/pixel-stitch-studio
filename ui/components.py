@@ -39,3 +39,61 @@ def render_upload_panel():
     )
 
     return uploaded_file
+
+
+# =========================
+# STATS PANEL (Размер схемы)
+# =========================
+
+def render_stats_panel(color_count, cell_size, grid_width, grid_height):
+    """
+    Отображает карточки со сводной статистикой обработанной схемы:
+    количество цветов, размер клетки, ширина и высота сетки.
+    """
+
+    stats = [
+        {
+            "icon": "🎨",
+            "label": "ЦВЕТА",
+            "value": f"{color_count}",
+            "unit": "",
+        },
+        {
+            "icon": "▦",
+            "label": "КЛЕТКА",
+            "value": f"{cell_size:.2f}",
+            "unit": "px",
+        },
+        {
+            "icon": "↔",
+            "label": "ШИРИНА",
+            "value": f"{grid_width}",
+            "unit": "клеток",
+        },
+        {
+            "icon": "↕",
+            "label": "ВЫСОТА",
+            "value": f"{grid_height}",
+            "unit": "клеток",
+        },
+    ]
+
+    cards_html = "".join(
+        f"""
+        <div class="stat-card">
+            <div class="stat-icon">{item['icon']}</div>
+            <div class="stat-label">{item['label']}</div>
+            <div class="stat-value">{item['value']}<span class="stat-unit">{item['unit']}</span></div>
+        </div>
+        """
+        for item in stats
+    )
+
+    st.markdown(
+        f"""
+        <div class="stats-grid">
+            {cards_html}
+        </div>
+        """,
+        unsafe_allow_html=True
+    )

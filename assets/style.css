@@ -137,6 +137,118 @@ img {
 }
 
 /* ========================= */
+/* Stats / Размер схемы */
+/* ========================= */
+
+.stats-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+
+    gap:12px;
+
+    margin-top:16px;
+
+    margin-bottom:8px;
+
+}
+
+.stat-card{
+
+    background:#1E1E24;
+
+    border:1px solid #2A2A34;
+
+    border-left:3px solid #00F5D4;
+
+    border-radius:10px;
+
+    padding:16px 18px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:10px;
+
+    transition:.2s;
+
+}
+
+.stat-card:hover{
+
+    border-color:#00F5D4;
+
+    transform:translateY(-2px);
+
+}
+
+.stat-card:nth-child(2n){
+
+    border-left-color:#FF007F;
+
+}
+
+.stat-icon{
+
+    font-size:16px;
+
+    line-height:1;
+
+}
+
+.stat-label{
+
+    font-family:"Roboto Mono", monospace;
+
+    font-size:11px;
+
+    letter-spacing:1.5px;
+
+    text-transform:uppercase;
+
+    color:#A0A0AB;
+
+}
+
+.stat-value{
+
+    font-family:"Press Start 2P", monospace;
+
+    font-size:18px;
+
+    color:#00F5D4;
+
+    text-shadow:2px 2px #FF007F;
+
+    line-height:1.4;
+
+    word-break:break-word;
+
+}
+
+.stat-card:nth-child(2n) .stat-value{
+
+    color:#FF007F;
+
+    text-shadow:2px 2px #00F5D4;
+
+}
+
+.stat-unit{
+
+    font-family:"Roboto Mono", monospace;
+
+    font-size:12px;
+
+    color:#A0A0AB;
+
+    margin-left:2px;
+
+}
+
+/* ========================= */
 /* Palette */
 /* ========================= */
 

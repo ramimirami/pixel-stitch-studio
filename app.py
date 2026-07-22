@@ -1,7 +1,7 @@
 import streamlit as st
 from PIL import Image, UnidentifiedImageError
 
-from ui.components import render_header, render_upload_panel
+from ui.components import render_header, render_upload_panel, render_stats_panel
 
 from core.pixel_core import (
     detect_grid_size,
@@ -84,11 +84,13 @@ if uploaded_file is not None:
 )
             
             st.subheader("Размер схемы")
-            st.write(f"Количество цветов: {color_count}")
 
-            st.write(f"Размер клетки: {cell_size:.2f}px")
-            st.write(f"Ширина: {grid_width}")
-            st.write(f"Высота: {grid_height}")
+            render_stats_panel(
+                color_count=color_count,
+                cell_size=cell_size,
+                grid_width=grid_width,
+                grid_height=grid_height,
+            )
 
             st.divider()
 
