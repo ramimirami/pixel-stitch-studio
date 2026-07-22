@@ -213,6 +213,14 @@ def detect_grid_size(img_gray):
     grid_w = _round_to_nice_size(grid_w)
     grid_h = _round_to_nice_size(grid_h)
 
+        # Коррекция почти квадратных схем
+    if abs(grid_w - grid_h) == 1:
+        ratio = max(grid_w, grid_h) / min(grid_w, grid_h)
+
+        if ratio < 1.01:
+            grid_w = max(grid_w, grid_h)
+            grid_h = max(grid_w, grid_h)
+
     if grid_w > 0 and grid_h > 0:
         step_from_size = (orig_w / grid_w + orig_h / grid_h) / 2.0
         step = max(1.0, step_from_size)
@@ -231,13 +239,21 @@ def _largest_connected_region(mask):
 
 
 def _should_increase_k(errors, width, height):
+
     mean_err = float(np.mean(errors))
     max_err = float(np.max(errors))
+
+    if errors.size != width * height:
+        return False
+
     high_mask = errors.reshape((height, width)) > 20
+
     high_frac = float(np.mean(high_mask))
     large_region = _largest_connected_region(high_mask)
+
     if mean_err > 4.0 or max_err > 18.0 or high_frac > 0.01 or large_region >= 6:
         return True
+
     return False
 
 
@@ -262,8 +278,19 @@ def _choose_elbow_k(ks, inertias):
 
 
 def optimize_palette(img_rgb, target_w, target_h, max_k=32):
-    img_small = img_rgb.resize((target_w, target_h), Image.Resampling.BOX)
-    pixels = np.array(img_small, dtype=float).reshape(-1, 3)
+
+    img_small = img_rgb.resize(
+        (target_w, target_h),
+        Image.Resampling.BOX
+    )
+
+    target_w, target_h = img_small.size
+
+    pixels = np.array(
+        img_small,
+        dtype=float
+    ).reshape(-1, 3)
+    
     unique_colors = len(np.unique(pixels.reshape(-1, 3), axis=0))
     max_k = min(max_k, max(6, unique_colors))
     candidate_ks = list(range(6, min(max_k, 32) + 1, 2))
