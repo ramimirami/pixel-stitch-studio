@@ -374,3 +374,31 @@ img {
     }
 
 }
+
+/* ========================= */
+/* DOWNLOAD BUTTON */
+/* ========================= */
+
+[data-testid="stDownloadButton"] button {
+
+    background:#1E1E24 !important;
+
+    color:#00F5D4 !important;
+
+    border:3px solid #00F5D4 !important;
+
+    font-family:"Press Start 2P", monospace !important;
+
+    font-size:11px !important;
+
+    padding:12px 20px !important;
+
+}
+
+[data-testid="stDownloadButton"] button:hover {
+
+    background:#00F5D4 !important;
+
+    color:#121214 !important;
+
+}

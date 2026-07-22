@@ -15,6 +15,7 @@ from core.pixel_core import (
 )
 
 from services.renderer import render_scheme_with_grid
+from services.exporter import image_to_png_bytes
 
 st.set_page_config(
     page_title="Pixel Stitch Studio",
@@ -93,6 +94,15 @@ if uploaded_file is not None:
             st.image(
                 scheme_with_grid,
                 use_container_width=True
+            )
+
+            png_bytes = image_to_png_bytes(scheme_with_grid)
+
+            st.download_button(
+                label="⬇ СКАЧАТЬ СХЕМУ (PNG)",
+                data=png_bytes,
+                file_name="pixel_stitch_scheme.png",
+                mime="image/png",
             )
             
             st.subheader("Размер схемы")
