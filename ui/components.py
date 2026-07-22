@@ -16,7 +16,6 @@ def render_header():
         unsafe_allow_html=True
     )
 
-
     st.markdown(
         """
         <div class="pixel-version">
@@ -26,15 +25,48 @@ def render_header():
         unsafe_allow_html=True
     )
 
+
 # =========================
 # STATUS INDICATOR
 # =========================
 
 def render_status(status):
+    """
+    status:
+      - "ready"    -> простая строка "SYSTEM READY"
+      - "uploaded" -> карточка с прогресс-баром и этапами обработки
+      - "done"     -> простая строка "PROCESS COMPLETE"
+    """
+
+    if status == "uploaded":
+        st.markdown(
+            """
+            <div class="processing-card">
+                <div class="processing-title">
+                    ОБРАБОТКА ИЗОБРАЖЕНИЯ<span class="dots"><span>.</span><span>.</span><span>.</span></span>
+                </div>
+                <div class="step-list">
+                    <div class="step-item">
+                        <span class="step-icon">◆</span>
+                        <span>СКАНИРОВАНИЕ СЕТКИ</span>
+                    </div>
+                    <div class="step-item">
+                        <span class="step-icon">◆</span>
+                        <span>ОПТИМИЗАЦИЯ ПАЛИТРЫ</span>
+                    </div>
+                    <div class="step-item">
+                        <span class="step-icon">◆</span>
+                        <span>ПОСТРОЕНИЕ СХЕМЫ</span>
+                    </div>
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+        return
 
     statuses = {
         "ready": "SYSTEM READY",
-        "uploaded": "IMAGE LOADED - PROCESSING",
         "done": "PROCESS COMPLETE",
     }
 
@@ -52,18 +84,41 @@ def render_status(status):
         unsafe_allow_html=True
     )
 
+
 # =========================
 # UPLOAD PANEL
 # =========================
 
-def render_upload_panel():
+def render_upload_panel(key):
 
     uploaded_file = st.file_uploader(
         " ",
-        label_visibility="hidden"
+        label_visibility="hidden",
+        key=key,
     )
 
     return uploaded_file
+
+
+def render_file_bar(filename):
+
+    st.markdown(
+        f"""
+        <div class="file-bar">
+            <span class="file-bar-icon">🖼</span>
+            <span class="file-bar-name">{filename}</span>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    reset_clicked = st.button(
+        "✕ Сбросить файл",
+        key="reset_file_btn",
+        help="Сбросить файл",
+    )
+
+    return reset_clicked
 
 
 # =========================
@@ -71,10 +126,6 @@ def render_upload_panel():
 # =========================
 
 def render_stats_panel(color_count, cell_size, grid_width, grid_height):
-    """
-    Отображает карточки со сводной статистикой обработанной схемы:
-    количество цветов, размер клетки, ширина и высота сетки.
-    """
 
     stats = [
         {

@@ -4,6 +4,7 @@ from PIL import Image, UnidentifiedImageError
 from ui.components import (
     render_header,
     render_upload_panel,
+    render_file_bar,
     render_stats_panel,
     render_status,
 )
@@ -36,7 +37,25 @@ load_css()
 
 render_header()
 
-uploaded_file = render_upload_panel()
+if "uploader_version" not in st.session_state:
+    st.session_state.uploader_version = 0
+
+if "current_file" not in st.session_state:
+    st.session_state.current_file = None
+
+if st.session_state.current_file is None:
+    new_file = render_upload_panel(key=f"file_uploader_{st.session_state.uploader_version}")
+    if new_file is not None:
+        st.session_state.current_file = new_file
+        st.rerun()
+else:
+    reset_clicked = render_file_bar(st.session_state.current_file.name)
+    if reset_clicked:
+        st.session_state.current_file = None
+        st.session_state.uploader_version += 1
+        st.rerun()
+
+uploaded_file = st.session_state.current_file
 
 status_placeholder = st.empty()
 

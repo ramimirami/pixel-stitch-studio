@@ -6,20 +6,13 @@
 /* ========================= */
 
 .stApp {
-
     background:#121214;
-
     color:#FFFFFF;
-
     font-family:"Roboto Mono", monospace;
-
 }
 
-
 .block-container {
-
     max-width:1100px;
-
 }
 
 
@@ -27,24 +20,18 @@
 /* TEXT */
 /* ========================= */
 
-
-h1,
-h2,
-h3 {
-
+h1, h2, h3 {
     font-family:"Press Start 2P", monospace !important;
-
     color:#FFFFFF !important;
-
 }
 
+h1 span, h2 span, h3 span,
+h1 *, h2 *, h3 * {
+    color:#FFFFFF !important;
+}
 
-p,
-span,
-label {
-
+p, span, label {
     color:#A0A0AB !important;
-
 }
 
 
@@ -52,41 +39,17 @@ label {
 /* HEADER */
 /* ========================= */
 
-/* PIXEL STITCH STUDIO */
 .pixel-logo {
-
     font-family:"Press Start 2P", monospace;
-
     color:#00F5D4;
-
     font-size:28px;
-
     letter-spacing:2px;
-
 }
 
-/* SYSTEM ONLINE // MVP v0.1 */
 .pixel-version {
-
     margin-top:15px;
-
     color:#A0A0AB;
-
     font-family:"Roboto Mono", monospace;
-
-}
-
-
-/* ========================= */
-/* скрытый UPLOAD TEXT */
-/* ========================= */
-
-
-.upload-title,
-.upload-subtitle {
-
-    display:none !important;
-
 }
 
 
@@ -94,287 +57,469 @@ label {
 /* FILE UPLOADER */
 /* ========================= */
 
-
 [data-testid="stFileUploader"] {
-
-    font-family:"Roboto Mono", monospace;
-
+    position: relative;
+    font-family: "Roboto Mono", monospace;
+    margin-top: 8px;
 }
 
+/* прячем родную иконку/текст Streamlit внутри зоны загрузки */
+[data-testid="stFileUploaderDropzoneInstructions"] {
+    display: none !important;
+}
 
+/* сама зона Drag & Drop — градиентная рамка + пунктир */
 [data-testid="stFileUploader"] section {
-
-    background:#1E1E24 !important;
-
+    background:
+        linear-gradient(#1E1E24, #1E1E24) padding-box,
+        linear-gradient(135deg, #FF007F, #00F5D4) border-box;
+    border: 3px dashed transparent;
+    border-radius: 14px;
+    min-height: 260px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 24px 28px 24px;
+    position: relative;
+    transition: box-shadow .25s ease, background .4s ease;
 }
 
+[data-testid="stFileUploader"] section:hover {
+    box-shadow: 0 0 28px rgba(0,245,212,.18);
+    background:
+        linear-gradient(#1E1E24, #1E1E24) padding-box,
+        linear-gradient(135deg, #00F5D4, #FF007F) border-box;
+}
+
+/* иконка + заголовок внутри зоны */
+[data-testid="stFileUploader"] section::before {
+    content: "ПЕРЕТАЩИТЕ ИЗОБРАЖЕНИЕ СЮДА";
+    white-space: pre-line;
+    font-family: "Press Start 2P", monospace;
+    font-size: 13px;
+    line-height: 2.6;
+    color: #FFFFFF;
+    margin-bottom: 14px;
+}
+
+/* подпись про форматы, показывается под кнопкой */
+[data-testid="stFileUploader"] section::after {
+    content: "PNG · JPEG · GIF · WEBP — до 10MB";
+    font-family: "Roboto Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: #A0A0AB;
+    order: 3;
+    margin-top: 18px;
+}
 
 [data-testid="stFileUploader"] button {
-
-    background:#1E1E24 !important;
-
-    color:#FF007F !important;
-
-    border:3px solid #FF007F !important;
-
-    font-family:"Press Start 2P", monospace !important;
-
+    background: transparent !important;
+    color: #00F5D4 !important;
+    border: 2px solid #00F5D4 !important;
+    border-radius: 4px;
+    font-family: "Press Start 2P", monospace !important;
+    font-size: 10px !important;
+    letter-spacing: 1px;
+    padding: 10px 22px !important;
+    margin-top: 8px;
+    transition: all .2s ease;
 }
 
+[data-testid="stFileUploader"] button:hover {
+    background: #00F5D4 !important;
+    color: #121214 !important;
+    box-shadow: 0 0 16px rgba(0,245,212,.4);
+}
+
+[data-testid="stFileUploader"] > div > div:nth-child(2) {
+    display: none !important;
+}
 
 /* ========================= */
 /* IMAGE */
 /* ========================= */
 
-
 img {
-
     image-rendering:pixelated;
-
 }
+
 
 /* ========================= */
 /* Stats / Размер схемы */
 /* ========================= */
 
 .stats-grid{
-
     display:grid;
-
     grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
-
     gap:12px;
-
     margin-top:16px;
-
     margin-bottom:8px;
-
 }
 
 .stat-card{
-
     background:#1E1E24;
-
     border:1px solid #2A2A34;
-
     border-left:3px solid #00F5D4;
-
     border-radius:10px;
-
     padding:16px 18px;
-
     display:flex;
-
     flex-direction:column;
-
     gap:10px;
-
     transition:.2s;
-
 }
 
 .stat-card:hover{
-
     border-color:#00F5D4;
-
     transform:translateY(-2px);
-
 }
 
-
 .stat-icon{
-
     font-size:16px;
-
     line-height:1;
-
 }
 
 .stat-label{
-
     font-family:"Roboto Mono", monospace;
-
     font-size:11px;
-
     letter-spacing:1.5px;
-
     text-transform:uppercase;
-
     color:#A0A0AB;
-
 }
 
 .stat-value{
-
     font-family:"Press Start 2P", monospace;
-
     font-size:18px;
-
     color:#00F5D4;
-
     line-height:1.4;
-
     word-break:break-word;
-
 }
 
 .stat-unit{
-
     font-family:"Roboto Mono", monospace;
-
     font-size:12px;
-
     color:#A0A0AB;
-
     margin-left:2px;
-
 }
+
 
 /* ========================= */
 /* Palette */
 /* ========================= */
 
 .palette-grid{
-
     display:grid;
-
     grid-template-columns:repeat(auto-fill,minmax(110px,1fr));
-
     gap:12px;
-
     margin-top:16px;
-
 }
 
 .palette-card{
-
     background:#1E1E24;
-
     border:1px solid #2A2A34;
-
     border-radius:10px;
-
     padding:16px;
-
     display:flex;
-
     flex-direction:column;
-
     align-items:center;
-
     gap:8px;
-
     transition:.2s;
-
 }
 
 .palette-card:hover{
-
     border-color:#00F5D4;
-
 }
 
 .palette-color{
-
     width:100%;
-
     height:64px;
-
     border-radius:8px;
-
     border:2px solid rgba(255,255,255,.25);
-
     margin-bottom:12px;
-
     display: flex;
-
     align-items: center;
-
     justify-content: center;
-
     position: relative;
-
 }
 
 .palette-id{
-
     font-weight:700;
-
     font-size:15px;
-
 }
 
 .palette-hex{
-
     font-family:monospace;
-
     font-size:13px;
-
 }
 
 .palette-percent{
-
     color:#00F5D4;
-
     font-weight:600;
-
 }
 
+
 /* ========================= */
-/* STATUS INDICATOR */
+/* STATUS INDICATOR (простая строка) */
 /* ========================= */
 
 .status-line {
-
     display:flex;
     align-items:center;
     gap:12px;
-
     margin:20px 0;
-
     font-family:"Roboto Mono", monospace;
     font-size:12px;
-
     letter-spacing:1px;
-
 }
-
 
 .status-dot {
-
     width:10px;
     height:10px;
-
     background:#00F5D4;
-
+    border-radius:2px;
     animation:pulse-status 1s infinite;
-
 }
-
 
 .status-text {
-
     color:#A0A0AB;
-
 }
-
 
 @keyframes pulse-status {
+    0% { opacity:1; }
+    50% { opacity:.3; }
+    100% { opacity:1; }
+}
 
-    0% {
-        opacity:1;
-    }
 
-    50% {
-        opacity:.3;
-    }
+/* ========================= */
+/* PROCESSING CARD (карточка "идёт обработка") */
+/* ========================= */
 
-    100% {
-        opacity:1;
-    }
+.processing-card {
+    background:#1E1E24;
+    border:1px solid #2A2A34;
+    border-left:3px solid #FF007F;
+    border-radius:10px;
+    padding:20px 24px;
+    margin:20px 0;
+}
+
+.processing-title {
+    font-family:"Press Start 2P", monospace;
+    font-size:12px;
+    color:#FFFFFF;
+    margin-bottom:18px;
+    letter-spacing:1px;
+}
+
+.processing-title .dots span {
+    animation: dot-blink 1.4s infinite;
+    opacity: 0;
+}
+
+.processing-title .dots span:nth-child(1) { animation-delay: 0s; }
+.processing-title .dots span:nth-child(2) { animation-delay: .2s; }
+.processing-title .dots span:nth-child(3) { animation-delay: .4s; }
+
+@keyframes dot-blink {
+    0%   { opacity: 0; }
+    20%  { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+.step-list {
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+.step-item {
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-family:"Roboto Mono", monospace;
+    font-size:11px;
+    letter-spacing:1px;
+    color:#A0A0AB;
+}
+
+.step-icon {
+    color:#FF007F;
+    animation:pulse-status 1.2s infinite;
+}
+
+/* ========================= */
+/* HIDE OLD STATUS LINE */
+/* ========================= */
+
+div[data-testid="stElementContainer"]:has(.status-line) {
+    display: none !important;
+}
+
+/* ========================= */
+/* FILE BAR (после загрузки) */
+/* ========================= */
+
+.file-bar {
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:#1E1E24;
+    border:1px solid #2A2A34;
+    border-radius:8px;
+    padding:10px 16px;
+    font-family:"Roboto Mono", monospace;
+    font-size:13px;
+    color:#FFFFFF;
+    height:40px;
+    box-sizing:border-box;
+}
+
+.file-bar-icon {
+    font-size:15px;
+    flex-shrink:0;
+}
+
+.file-bar-name {
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    color:#FFFFFF;
+}
+
+.file-bar {
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:#1E1E24;
+    border:1px solid #2A2A34;
+    border-radius:8px;
+    padding:0 16px;
+    font-family:"Roboto Mono", monospace;
+    font-size:13px;
+    color:#FFFFFF;
+    height:44px;
+    box-sizing:border-box;
+    margin:0 0 8px 0;
+}
+
+/* кнопка сброса — небольшая текстовая ссылка под блоком файла */
+div[data-testid="stElementContainer"]:has(+ div[data-testid="stElementContainer"] .file-bar) + div button,
+div:has(> .file-bar) + div[data-testid="stElementContainer"] button {
+    background:transparent !important;
+    color:#FF007F !important;
+    border:none !important;
+    box-shadow:none !important;
+    padding:0 !important;
+    font-family:"Roboto Mono", monospace !important;
+    font-size:12px !important;
+    letter-spacing:0.5px;
+    opacity:0.75;
+    transition:opacity .2s ease;
+}
+
+div:has(> .file-bar) + div[data-testid="stElementContainer"] button:hover {
+    opacity:1;
+    text-decoration:underline;
+}
+
+/* ========================= */
+/* DOWNLOAD BUTTONS */
+/* ========================= */
+
+[data-testid="stDownloadButton"] button {
+
+    background:#1E1E24 !important;
+
+    color:#FFFFFF !important;
+
+    border:2px solid #00F5D4 !important;
+
+    border-radius:8px !important;
+
+    font-family:"Press Start 2P", monospace !important;
+
+    font-size:12px !important;
+
+    font-weight:400 !important;
+
+    padding:16px 22px !important;
+
+    letter-spacing:1px !important;
+
+    box-shadow:none !important;
+
+    transition:background-color .2s, border-color .2s !important;
 
 }
-/* ========================= */
+
+[data-testid="stDownloadButton"] button:hover {
+
+    background:#00F5D4 !important;
+
+    color:#FFFFFF !important;
+
+    border-color:#00F5D4 !important;
+
+    box-shadow:none !important;
+
+}
+
+[data-testid="stDownloadButton"] button:focus-visible {
+
+    outline:3px solid #00F5D4 !important;
+
+    outline-offset:2px !important;
+
+    box-shadow:none !important;
+
+}
+
+/* Главная кнопка — экспорт в PDF (Streamlit помечает её type="primary") */
+
+[data-testid="stDownloadButton"] button[kind="primary"] {
+
+    background:#1E1E24 !important;
+
+    color:#FFFFFF !important;
+
+    border:2px solid #FF007F !important;
+
+    font-size:14px !important;
+
+    padding:20px 26px !important;
+
+    margin-top:10px !important;
+
+    box-shadow:none !important;
+
+    animation:none !important;
+
+}
+
+[data-testid="stDownloadButton"] button[kind="primary"]:hover {
+
+    background:#FF007F !important;
+
+    color:#FFFFFF !important;
+
+    border-color:#FF007F !important;
+
+    box-shadow:none !important;
+
+}
+
+[data-testid="stDownloadButton"] button[kind="primary"]:focus-visible {
+
+    outline:3px solid #FF007F !important;
+
+    outline-offset:2px !important;
+
+    box-shadow:none !important;
+
+}/* ========================= */
 /* DOWNLOAD BUTTONS */
 /* ========================= */
 
