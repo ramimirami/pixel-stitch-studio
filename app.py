@@ -14,8 +14,8 @@ from core.pixel_core import (
     get_palette_stats,
 )
 
-from services.renderer import render_scheme_with_grid
-from services.exporter import image_to_png_bytes
+from services.renderer import render_scheme_with_grid, render_palette_image
+from services.exporter import image_to_png_bytes, build_pdf_report
 
 st.set_page_config(
     page_title="Pixel Stitch Studio",
@@ -96,13 +96,39 @@ if uploaded_file is not None:
                 use_container_width=True
             )
 
-            png_bytes = image_to_png_bytes(scheme_with_grid)
+            palette_image = render_palette_image(palette_stats)
+
+            scheme_png_bytes = image_to_png_bytes(scheme_with_grid)
+            palette_png_bytes = image_to_png_bytes(palette_image)
+            pdf_bytes = build_pdf_report(scheme_with_grid, palette_image)
+
+            download_col1, download_col2 = st.columns(2)
+
+            with download_col1:
+                st.download_button(
+                    label="⬇ СХЕМА (PNG)",
+                    data=scheme_png_bytes,
+                    file_name="pixel_stitch_scheme.png",
+                    mime="image/png",
+                    use_container_width=True,
+                )
+
+            with download_col2:
+                st.download_button(
+                    label="⬇ ПАЛИТРА (PNG)",
+                    data=palette_png_bytes,
+                    file_name="pixel_stitch_palette.png",
+                    mime="image/png",
+                    use_container_width=True,
+                )
 
             st.download_button(
-                label="⬇ СКАЧАТЬ СХЕМУ (PNG)",
-                data=png_bytes,
-                file_name="pixel_stitch_scheme.png",
-                mime="image/png",
+                label="⬇ СКАЧАТЬ ВСЁ ОДНИМ PDF",
+                data=pdf_bytes,
+                file_name="pixel_stitch_report.pdf",
+                mime="application/pdf",
+                use_container_width=True,
+                type="primary",
             )
             
             st.subheader("Размер схемы")

@@ -374,24 +374,33 @@ img {
     }
 
 }
-
 /* ========================= */
-/* DOWNLOAD BUTTON */
+/* DOWNLOAD BUTTONS */
 /* ========================= */
 
 [data-testid="stDownloadButton"] button {
 
     background:#1E1E24 !important;
 
-    color:#00F5D4 !important;
+    color:#FFFFFF !important;
 
-    border:3px solid #00F5D4 !important;
+    border:2px solid #00F5D4 !important;
+
+    border-radius:8px !important;
 
     font-family:"Press Start 2P", monospace !important;
 
-    font-size:11px !important;
+    font-size:12px !important;
 
-    padding:12px 20px !important;
+    font-weight:400 !important;
+
+    padding:16px 22px !important;
+
+    letter-spacing:1px !important;
+
+    box-shadow:none !important;
+
+    transition:background-color .2s, border-color .2s !important;
 
 }
 
@@ -399,6 +408,64 @@ img {
 
     background:#00F5D4 !important;
 
-    color:#121214 !important;
+    color:#FFFFFF !important;
+
+    border-color:#00F5D4 !important;
+
+    box-shadow:none !important;
+
+}
+
+[data-testid="stDownloadButton"] button:focus-visible {
+
+    outline:3px solid #00F5D4 !important;
+
+    outline-offset:2px !important;
+
+    box-shadow:none !important;
+
+}
+
+/* Главная кнопка — экспорт в PDF (Streamlit помечает её type="primary") */
+
+[data-testid="stDownloadButton"] button[kind="primary"] {
+
+    background:#1E1E24 !important;
+
+    color:#FFFFFF !important;
+
+    border:2px solid #FF007F !important;
+
+    font-size:14px !important;
+
+    padding:20px 26px !important;
+
+    margin-top:10px !important;
+
+    box-shadow:none !important;
+
+    animation:none !important;
+
+}
+
+[data-testid="stDownloadButton"] button[kind="primary"]:hover {
+
+    background:#FF007F !important;
+
+    color:#FFFFFF !important;
+
+    border-color:#FF007F !important;
+
+    box-shadow:none !important;
+
+}
+
+[data-testid="stDownloadButton"] button[kind="primary"]:focus-visible {
+
+    outline:3px solid #FF007F !important;
+
+    outline-offset:2px !important;
+
+    box-shadow:none !important;
 
 }
