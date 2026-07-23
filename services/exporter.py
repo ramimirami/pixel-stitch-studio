@@ -21,7 +21,7 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.utils import ImageReader
 
 
-def build_pdf_report(scheme_image, palette_image, title="Pixel Stitch Studio"):
+def build_pdf_report(scheme_image, palette_image, legend_image=None, title="Pixel Stitch Studio"):
     """
     Собирает PDF из двух страниц: схема с сеткой и палитра.
 
@@ -55,6 +55,10 @@ def build_pdf_report(scheme_image, palette_image, title="Pixel Stitch Studio"):
     draw_page(scheme_image, f"{title} — Схема")
     draw_page(palette_image, f"{title} — Палитра")
 
+    if legend_image is not None:
+        draw_page(legend_image, f"{title} — Легенда")
+
     c.save()
+
     buffer.seek(0)
     return buffer.getvalue()

@@ -113,7 +113,7 @@ def render_file_bar(filename):
     )
 
     reset_clicked = st.button(
-        "✕ Сбросить файл",
+        "Сбросить файл",
         key="reset_file_btn",
         help="Сбросить файл",
     )

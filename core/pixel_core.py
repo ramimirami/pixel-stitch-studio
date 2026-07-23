@@ -382,3 +382,22 @@ def get_palette_stats(img_rgb):
         })
 
     return palette_data
+
+def assign_symbols(palette_stats):
+    """
+    Присваивает каждому цвету уникальный числовой символ (1, 2, 3...)
+    по убыванию площади (самый частый цвет получает символ 1).
+
+    palette_stats: список словарей из get_palette_stats(), уже отсортирован
+                   по убыванию частоты (percentage).
+
+    Возвращает тот же список, дополнив каждый элемент полями:
+        "symbol" — числовой символ (int)
+        "name"   — условное название цвета (str), например "Цвет 01"
+    """
+
+    for i, color in enumerate(palette_stats):
+        color["symbol"] = i + 1
+        color["name"] = f"Цвет {i + 1:02d}"
+
+    return palette_stats

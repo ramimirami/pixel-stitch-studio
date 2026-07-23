@@ -13,9 +13,14 @@ from core.pixel_core import (
     detect_grid_size,
     optimize_palette,
     get_palette_stats,
+    assign_symbols,
 )
 
-from services.renderer import render_scheme_with_grid, render_palette_image
+from services.renderer import (
+    render_scheme_with_grid,
+    render_palette_image,
+    render_legend_image,
+)
 from services.exporter import image_to_png_bytes, build_pdf_report
 
 st.set_page_config(
@@ -107,9 +112,21 @@ if uploaded_file is not None:
 
             palette_stats = get_palette_stats(processed_image)
 
+            palette_stats = get_palette_stats(processed_image)
+            palette_stats = assign_symbols(palette_stats)
+
             st.subheader("Обработанная схема")
 
-            scheme_with_grid = render_scheme_with_grid(processed_image)
+            show_symbols = st.toggle(
+                "Показывать символы на схеме",
+                value=False,
+            )
+
+            scheme_with_grid = render_scheme_with_grid(
+                processed_image,
+                show_symbols=show_symbols,
+                palette_stats=palette_stats,
+            )
 
             st.image(
                 scheme_with_grid,
@@ -117,10 +134,11 @@ if uploaded_file is not None:
             )
 
             palette_image = render_palette_image(palette_stats)
+            legend_image = render_legend_image(palette_stats)
 
             scheme_png_bytes = image_to_png_bytes(scheme_with_grid)
             palette_png_bytes = image_to_png_bytes(palette_image)
-            pdf_bytes = build_pdf_report(scheme_with_grid, palette_image)
+            pdf_bytes = build_pdf_report(scheme_with_grid, palette_image, legend_image)
 
             download_col1, download_col2 = st.columns(2)
 
@@ -183,6 +201,40 @@ if uploaded_file is not None:
                         st.markdown(
                             f"**{color['hex'].upper()}** · {color['percentage']:.1f}%"
                         )
+
+            st.divider()
+
+            st.subheader("Легенда схемы")
+
+            legend_col1, legend_col2, legend_col3 = st.columns([1, 1, 3])
+            with legend_col1:
+                st.markdown("**№**")
+            with legend_col2:
+                st.markdown("**Цвет**")
+            with legend_col3:
+                st.markdown("**Название / HEX**")
+
+            for color in palette_stats:
+                row_col1, row_col2, row_col3 = st.columns([1, 1, 3])
+
+                with row_col1:
+                    st.markdown(f"**{color['symbol']}**")
+
+                with row_col2:
+                    st.markdown(
+                        f"""
+                        <div class="palette-color"
+                            style="height:32px; margin-bottom:0;
+                                   background:{color['hex']};">
+                        </div>
+                        """,
+                        unsafe_allow_html=True,
+                    )
+
+                with row_col3:
+                    st.markdown(
+                        f"{color['name']} · {color['hex'].upper()} · {color['percentage']:.1f}%"
+                    )
             
         except UnidentifiedImageError:
 
