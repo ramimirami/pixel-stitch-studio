@@ -202,30 +202,7 @@ if uploaded_file is not None:
                 use_container_width=True,
             )
 
-            st.divider()
-
-            st.subheader("Палитра")
-            for row_start in range(0, len(palette_stats), 4):
-
-                columns = st.columns(4)
-
-                for column, color in zip(columns, palette_stats[row_start:row_start + 4]):
-
-                    with column:
-
-                        st.markdown(
-                            f"""
-                            <div class="palette-color"
-                                style="background:{color['hex']};">
-                            </div>
-                            """,
-                            unsafe_allow_html=True,
-                        )
-
-                        st.markdown(
-                            f"**{color['hex'].upper()}** · {color['percentage']:.1f}%"
-                        )
-
+            
             st.divider()
 
             st.subheader("Легенда схемы")
