@@ -15,11 +15,13 @@ from core.pixel_core import (
     get_palette_stats,
     assign_symbols,
 )
+from core.dmc_matcher import match_dmc_colors
 
 from services.renderer import (
     render_scheme_with_grid,
     render_palette_image,
     render_legend_image,
+    render_dmc_cross_stitch,
 )
 from services.exporter import image_to_png_bytes, build_pdf_report
 
@@ -111,9 +113,8 @@ if uploaded_file is not None:
                 render_status("done")
 
             palette_stats = get_palette_stats(processed_image)
-
-            palette_stats = get_palette_stats(processed_image)
             palette_stats = assign_symbols(palette_stats)
+            palette_stats = match_dmc_colors(palette_stats)
 
             st.subheader("Обработанная схема")
 
@@ -135,9 +136,11 @@ if uploaded_file is not None:
 
             palette_image = render_palette_image(palette_stats)
             legend_image = render_legend_image(palette_stats)
+            dmc_cross_stitch_image = render_dmc_cross_stitch(processed_image, palette_stats)
 
             scheme_png_bytes = image_to_png_bytes(scheme_with_grid)
             palette_png_bytes = image_to_png_bytes(palette_image)
+            dmc_cross_stitch_png_bytes = image_to_png_bytes(dmc_cross_stitch_image)
             pdf_bytes = build_pdf_report(scheme_with_grid, palette_image, legend_image)
 
             download_col1, download_col2 = st.columns(2)
@@ -180,6 +183,27 @@ if uploaded_file is not None:
 
             st.divider()
 
+            st.subheader("Готовая работа мулине DMC")
+            st.caption(
+                "Так будет выглядеть готовая вышивка: крестики вместо пикселей, "
+                "цвета — ближайшие мулине DMC."
+            )
+
+            st.image(
+                dmc_cross_stitch_image,
+                use_container_width=True
+            )
+
+            st.download_button(
+                label="⬇ СХЕМА КРЕСТИКАМИ DMC (PNG)",
+                data=dmc_cross_stitch_png_bytes,
+                file_name="pixel_stitch_dmc_cross_stitch.png",
+                mime="image/png",
+                use_container_width=True,
+            )
+
+            st.divider()
+
             st.subheader("Палитра")
             for row_start in range(0, len(palette_stats), 4):
 
@@ -205,17 +229,20 @@ if uploaded_file is not None:
             st.divider()
 
             st.subheader("Легенда схемы")
+            st.caption("Номер мулине DMC подобран автоматически по ближайшему цвету.")
 
-            legend_col1, legend_col2, legend_col3 = st.columns([1, 1, 3])
+            legend_col1, legend_col2, legend_col3, legend_col4 = st.columns([1, 1, 1, 3])
             with legend_col1:
                 st.markdown("**№**")
             with legend_col2:
-                st.markdown("**Цвет**")
+                st.markdown("**Цвет схемы**")
             with legend_col3:
-                st.markdown("**Название / HEX**")
+                st.markdown("**Цвет DMC**")
+            with legend_col4:
+                st.markdown("**Мулине DMC / покрытие**")
 
             for color in palette_stats:
-                row_col1, row_col2, row_col3 = st.columns([1, 1, 3])
+                row_col1, row_col2, row_col3, row_col4 = st.columns([1, 1, 1, 3])
 
                 with row_col1:
                     st.markdown(f"**{color['symbol']}**")
@@ -233,7 +260,19 @@ if uploaded_file is not None:
 
                 with row_col3:
                     st.markdown(
-                        f"{color['name']} · {color['hex'].upper()} · {color['percentage']:.1f}%"
+                        f"""
+                        <div class="palette-color"
+                            style="height:32px; margin-bottom:0;
+                                   background:{color['dmc_hex']};">
+                        </div>
+                        """,
+                        unsafe_allow_html=True,
+                    )
+
+                with row_col4:
+                    st.markdown(
+                        f"**DMC {color['dmc_code']}** · {color['dmc_name']} · "
+                        f"{color['percentage']:.1f}%"
                     )
             
         except UnidentifiedImageError:

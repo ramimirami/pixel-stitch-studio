@@ -193,12 +193,18 @@ LEGEND_TEXT_COLOR = (255, 255, 255)
 LEGEND_ACCENT_COLOR = (0, 245, 212)
 
 
-def render_legend_image(palette_stats, width=520):
+def render_legend_image(palette_stats, width=620):
     """
-    Рисует таблицу-легенду: символ / превью цвета / название / hex.
+    Рисует таблицу-легенду: символ / превью цвета схемы / превью цвета DMC /
+    название и номер DMC / процент покрытия.
 
-    palette_stats: список из get_palette_stats() + assign_symbols()
+    palette_stats: список из get_palette_stats() + assign_symbols() +
+                   match_dmc_colors(). Если элементы не содержат поле
+                   "dmc_code" (DMC ещё не подобран), колонка DMC не рисуется —
+                   легенда просто становится немного уже.
     """
+
+    has_dmc = bool(palette_stats) and "dmc_code" in palette_stats[0]
 
     rows = len(palette_stats)
     total_h = LEGEND_PADDING * 2 + rows * LEGEND_ROW_HEIGHT
@@ -216,8 +222,9 @@ def render_legend_image(palette_stats, width=520):
         font_small = ImageFont.load_default()
 
     symbol_col_x = LEGEND_PADDING
-    swatch_col_x = LEGEND_PADDING + 60
-    text_col_x = swatch_col_x + LEGEND_SWATCH_SIZE + 18
+    scheme_swatch_x = LEGEND_PADDING + 60
+    dmc_swatch_x = scheme_swatch_x + LEGEND_SWATCH_SIZE + 14 if has_dmc else None
+    text_col_x = (dmc_swatch_x if has_dmc else scheme_swatch_x) + LEGEND_SWATCH_SIZE + 18
 
     for i, color in enumerate(palette_stats):
         row_y0 = LEGEND_PADDING + i * LEGEND_ROW_HEIGHT
@@ -243,20 +250,34 @@ def render_legend_image(palette_stats, width=520):
             font=font_symbol,
         )
 
-        # Превью цвета
+        # Превью цвета схемы
         swatch_y0 = row_center_y - LEGEND_SWATCH_SIZE / 2
         swatch_y1 = row_center_y + LEGEND_SWATCH_SIZE / 2
         draw.rectangle(
-            [swatch_col_x, swatch_y0, swatch_col_x + LEGEND_SWATCH_SIZE, swatch_y1],
+            [scheme_swatch_x, swatch_y0, scheme_swatch_x + LEGEND_SWATCH_SIZE, swatch_y1],
             fill=color["rgb"],
             outline=(255, 255, 255, 60),
             width=1,
         )
 
-        # Название и hex
+        # Превью цвета мулине DMC
+        if has_dmc:
+            draw.rectangle(
+                [dmc_swatch_x, swatch_y0, dmc_swatch_x + LEGEND_SWATCH_SIZE, swatch_y1],
+                fill=color["dmc_rgb"],
+                outline=(255, 255, 255, 60),
+                width=1,
+            )
+
+        # Название и hex / номер DMC
+        if has_dmc:
+            title_line = f"DMC {color['dmc_code']} · {color['dmc_name']}"
+        else:
+            title_line = color["name"]
+
         draw.text(
             (text_col_x, row_y0 + 10),
-            color["name"],
+            title_line,
             fill=LEGEND_TEXT_COLOR,
             font=font_label,
         )
@@ -268,3 +289,113 @@ def render_legend_image(palette_stats, width=520):
         )
 
     return image
+
+
+# =========================================================================
+# Финальная визуализация "крестиками" цветами мулине DMC
+# =========================================================================
+
+# Цвет фона имитирует небелёную канву Aida
+FABRIC_BG_COLOR = (247, 246, 242)
+FABRIC_WEAVE_COLOR = (221, 219, 211)   # мелкие "дырочки" переплетения канвы
+
+STITCH_SEAM_BLEND = 0.22        # затемнение тонкого шва между соседними стежками
+STITCH_TOP_BLEND = 0.32         # осветление верхней грани "стежка-подушечки"
+STITCH_LEFT_BLEND = 0.12        # лёгкое осветление левой грани
+STITCH_RIGHT_BLEND = 0.16       # лёгкое затемнение правой грани
+STITCH_BOTTOM_BLEND = 0.34      # затемнение нижней грани — создаёт объём нити
+
+
+def _blend_color(rgb, target, factor):
+    """Смешивает rgb с target в пропорции factor (0..1) — для светотени стежка."""
+    return tuple(
+        max(0, min(255, int(round(c + (t - c) * factor))))
+        for c, t in zip(rgb, target)
+    )
+
+
+def _draw_fabric_texture(draw, grid_width, grid_height, cell_size_px):
+    """Рисует лёгкую фактуру канвы — мелкие крестики переплетения в узлах сетки."""
+    dot_half = max(1, int(round(cell_size_px * 0.07)))
+
+    for gy in range(grid_height + 1):
+        for gx in range(grid_width + 1):
+            cx = gx * cell_size_px
+            cy = gy * cell_size_px
+            draw.line(
+                [(cx - dot_half, cy), (cx + dot_half, cy)],
+                fill=FABRIC_WEAVE_COLOR, width=1,
+            )
+            draw.line(
+                [(cx, cy - dot_half), (cx, cy + dot_half)],
+                fill=FABRIC_WEAVE_COLOR, width=1,
+            )
+
+
+def _draw_stitch(draw, x0, y0, x1, y1, rgb):
+    """
+    Рисует один "объёмный" крестик-подушечку: клетка заливается основным
+    цветом мулине и делится по диагоналям на 4 треугольника со смещённой
+    яркостью (светлее сверху-слева, темнее снизу-справа). Это имитирует
+    характерный рельеф нити в реальной вышивке крестом.
+    """
+    cx = (x0 + x1) / 2.0
+    cy = (y0 + y1) / 2.0
+
+    top = _blend_color(rgb, (255, 255, 255), STITCH_TOP_BLEND)
+    left = _blend_color(rgb, (255, 255, 255), STITCH_LEFT_BLEND)
+    right = _blend_color(rgb, (0, 0, 0), STITCH_RIGHT_BLEND)
+    bottom = _blend_color(rgb, (0, 0, 0), STITCH_BOTTOM_BLEND)
+
+    draw.polygon([(x0, y0), (x1, y0), (cx, cy)], fill=top)
+    draw.polygon([(x0, y0), (x0, y1), (cx, cy)], fill=left)
+    draw.polygon([(x1, y0), (x1, y1), (cx, cy)], fill=right)
+    draw.polygon([(x0, y1), (x1, y1), (cx, cy)], fill=bottom)
+
+    # тонкий шов по краю клетки — отделяет соседние стежки друг от друга
+    seam = _blend_color(rgb, (0, 0, 0), STITCH_SEAM_BLEND)
+    draw.rectangle([x0, y0, x1, y1], outline=seam, width=1)
+
+
+def render_dmc_cross_stitch(
+    processed_image,
+    palette_stats,
+    cell_size_px=DEFAULT_CELL_SIZE_PX,
+):
+    """
+    Рисует финальную визуализацию готовой работы: объёмные крестики-подушечки
+    нитками мулине DMC на фоне канвы с лёгкой фактурой переплетения — без
+    разметочной сетки и блоков.
+
+    processed_image: PIL.Image — маленькая обработанная схема (1px = 1 клетка)
+    palette_stats: список из get_palette_stats() + assign_symbols() +
+                   match_dmc_colors() — у каждого цвета должно быть поле "dmc_rgb"
+    """
+
+    grid_width, grid_height = processed_image.size
+    output_width = grid_width * cell_size_px
+    output_height = grid_height * cell_size_px
+
+    canvas = Image.new("RGB", (output_width, output_height), FABRIC_BG_COLOR)
+    draw = ImageDraw.Draw(canvas)
+
+    _draw_fabric_texture(draw, grid_width, grid_height, cell_size_px)
+
+    # Сопоставляем исходный цвет клетки схемы -> цвет мулине DMC
+    rgb_to_dmc_rgb = {tuple(c["rgb"]): tuple(c["dmc_rgb"]) for c in palette_stats}
+
+    pixels = processed_image.convert("RGB").load()
+
+    for gy in range(grid_height):
+        for gx in range(grid_width):
+            cell_rgb = pixels[gx, gy]
+            dmc_rgb = rgb_to_dmc_rgb.get(cell_rgb, cell_rgb)
+
+            x0 = gx * cell_size_px
+            y0 = gy * cell_size_px
+            x1 = (gx + 1) * cell_size_px
+            y1 = (gy + 1) * cell_size_px
+
+            _draw_stitch(draw, x0, y0, x1, y1, dmc_rgb)
+
+    return canvas
