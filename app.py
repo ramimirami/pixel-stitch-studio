@@ -135,7 +135,7 @@ if uploaded_file is not None:
             with status_placeholder:
                 render_status("done")
 
-            st.subheader("Количество цветов схемы")
+            st.subheader("Результат")
 
             target_color_count = st.slider(
                 "Количество цветов в схеме",
@@ -147,18 +147,18 @@ if uploaded_file is not None:
             )
 
             if target_color_count < base_color_count:
-                processed_image = reduce_palette_colors(base_processed_image, target_color_count)
+                processed_image = reduce_palette_colors(
+                    base_processed_image,
+                    target_color_count
+                )
             else:
                 processed_image = base_processed_image
+
 
             palette_stats = get_palette_stats(processed_image)
             palette_stats = assign_symbols(palette_stats)
             palette_stats = match_dmc_colors(palette_stats)
 
-            # Группируем цвета схемы по итоговой нити мулине DMC — легенда
-            # и символы на схеме теперь опираются на цвет нити, а не на
-            # исходный HEX. Исходные цвета остаются доступны внутри группы
-            # (поле source_colors) — их можно показать рядом / по наведению.
             grouped_stats = group_by_dmc(palette_stats)
 
             color_count = len(palette_stats)
@@ -169,11 +169,14 @@ if uploaded_file is not None:
                 for source in group["source_colors"]
             ]
 
-            st.subheader("Результат")
 
             palette_image = render_palette_image(palette_stats)
             legend_image = render_legend_image(grouped_stats)
-            dmc_cross_stitch_image = render_dmc_cross_stitch(processed_image, palette_stats)
+            dmc_cross_stitch_image = render_dmc_cross_stitch(
+                processed_image,
+                palette_stats
+            )
+
 
             view_mode = st.radio(
                 "Показать",
@@ -189,6 +192,7 @@ if uploaded_file is not None:
                 )
             else:
                 show_symbols = False
+
 
             scheme_with_grid = render_scheme_with_grid(
                 processed_image,
