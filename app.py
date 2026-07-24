@@ -215,25 +215,6 @@ if uploaded_file is not None:
             dmc_cross_stitch_png_bytes = image_to_png_bytes(dmc_cross_stitch_image)
             pdf_bytes = build_pdf_report(scheme_with_grid, palette_image, legend_image)
 
-            download_col1, download_col2 = st.columns(2)
-
-            with download_col1:
-                st.download_button(
-                    label="⬇ СХЕМА (PNG)",
-                    data=scheme_png_bytes,
-                    file_name="pixel_stitch_scheme.png",
-                    mime="image/png",
-                    use_container_width=True,
-                )
-
-            with download_col2:
-                st.download_button(
-                    label="⬇ ПАЛИТРА (PNG)",
-                    data=palette_png_bytes,
-                    file_name="pixel_stitch_palette.png",
-                    mime="image/png",
-                    use_container_width=True,
-                )
 
             st.download_button(
                 label="⬇ СКАЧАТЬ ВСЁ ОДНИМ PDF",
@@ -243,39 +224,10 @@ if uploaded_file is not None:
                 use_container_width=True,
                 type="primary",
             )
-            
-            st.subheader("Размер схемы")
-
-            render_stats_panel(
-                color_count=color_count,
-                cell_size=cell_size,
-                grid_width=grid_width,
-                grid_height=grid_height,
-            )
-
-            st.divider()
-
-            st.subheader("Готовая работа мулине DMC")
-            st.caption(
-                "Так будет выглядеть готовая вышивка: крестики вместо пикселей, "
-                "цвета — ближайшие мулине DMC."
-            )
-
-            st.image(
-                dmc_cross_stitch_image,
-                use_container_width=True
-            )
-
-            st.download_button(
-                label="⬇ СХЕМА КРЕСТИКАМИ DMC (PNG)",
-                data=dmc_cross_stitch_png_bytes,
-                file_name="pixel_stitch_dmc_cross_stitch.png",
-                mime="image/png",
-                use_container_width=True,
-            )
 
             
             st.divider()
+
 
             st.subheader("Легенда схемы")
             st.caption(
@@ -333,6 +285,18 @@ if uploaded_file is not None:
                         f"**DMC {group['dmc_code']}** · {group['dmc_name']} · "
                         f"{group['percentage']:.1f}%"
                     )
+
+
+
+            st.subheader("Размер схемы")
+
+            render_stats_panel(
+                color_count=color_count,
+                cell_size=cell_size,
+                grid_width=grid_width,
+                grid_height=grid_height,
+            )
+
             
         except UnidentifiedImageError:
 
