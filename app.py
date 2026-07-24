@@ -169,12 +169,26 @@ if uploaded_file is not None:
                 for source in group["source_colors"]
             ]
 
-            st.subheader("Обработанная схема")
+            st.subheader("Результат")
 
-            show_symbols = st.toggle(
-                "Показывать символы на схеме",
-                value=False,
+            palette_image = render_palette_image(palette_stats)
+            legend_image = render_legend_image(grouped_stats)
+            dmc_cross_stitch_image = render_dmc_cross_stitch(processed_image, palette_stats)
+
+            view_mode = st.radio(
+                "Показать",
+                options=["Схема", "Готовая работа"],
+                horizontal=True,
+                label_visibility="collapsed",
             )
+
+            if view_mode == "Схема":
+                show_symbols = st.toggle(
+                    "Показывать символы на схеме",
+                    value=False,
+                )
+            else:
+                show_symbols = False
 
             scheme_with_grid = render_scheme_with_grid(
                 processed_image,
@@ -182,15 +196,20 @@ if uploaded_file is not None:
                 palette_stats=symbol_lookup_stats,
             )
 
-            st.image(
-                scheme_with_grid,
-                use_container_width=True
-            )
+            compare_col1, compare_col2 = st.columns(2)
 
-            palette_image = render_palette_image(palette_stats)
-            legend_image = render_legend_image(grouped_stats)
-            dmc_cross_stitch_image = render_dmc_cross_stitch(processed_image, palette_stats)
+            with compare_col1:
+                st.caption("ОРИГИНАЛ")
+                st.image(image, use_container_width=True)
 
+            with compare_col2:
+                if view_mode == "Схема":
+                    st.caption("СХЕМА ДЛЯ ВЫШИВКИ")
+                    st.image(scheme_with_grid, use_container_width=True)
+                else:
+                    st.caption("ГОТОВАЯ РАБОТА")
+                    st.image(dmc_cross_stitch_image, use_container_width=True)
+            
             scheme_png_bytes = image_to_png_bytes(scheme_with_grid)
             palette_png_bytes = image_to_png_bytes(palette_image)
             dmc_cross_stitch_png_bytes = image_to_png_bytes(dmc_cross_stitch_image)
