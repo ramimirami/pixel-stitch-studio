@@ -193,20 +193,21 @@ LEGEND_TEXT_COLOR = (255, 255, 255)
 LEGEND_ACCENT_COLOR = (0, 245, 212)
 
 
-def render_legend_image(palette_stats, width=620):
+LEGEND_CHIP_SIZE = 14
+LEGEND_CHIP_GAP = 4
+LEGEND_MAX_CHIPS = 6
+
+
+def render_legend_image(grouped_stats, width=680):
     """
-    Рисует таблицу-легенду: символ / превью цвета схемы / превью цвета DMC /
-    название и номер DMC / процент покрытия.
+    Рисует таблицу-легенду по нитям мулине DMC: символ / цвет нити DMC /
+    маленькие превью исходных цветов схемы, объединённых в эту нить /
+    номер и название DMC / суммарный процент покрытия.
 
-    palette_stats: список из get_palette_stats() + assign_symbols() +
-                   match_dmc_colors(). Если элементы не содержат поле
-                   "dmc_code" (DMC ещё не подобран), колонка DMC не рисуется —
-                   легенда просто становится немного уже.
+    grouped_stats: список из group_by_dmc().
     """
 
-    has_dmc = bool(palette_stats) and "dmc_code" in palette_stats[0]
-
-    rows = len(palette_stats)
+    rows = len(grouped_stats)
     total_h = LEGEND_PADDING * 2 + rows * LEGEND_ROW_HEIGHT
 
     image = Image.new("RGB", (width, total_h), LEGEND_BG_COLOR)
@@ -222,11 +223,11 @@ def render_legend_image(palette_stats, width=620):
         font_small = ImageFont.load_default()
 
     symbol_col_x = LEGEND_PADDING
-    scheme_swatch_x = LEGEND_PADDING + 60
-    dmc_swatch_x = scheme_swatch_x + LEGEND_SWATCH_SIZE + 14 if has_dmc else None
-    text_col_x = (dmc_swatch_x if has_dmc else scheme_swatch_x) + LEGEND_SWATCH_SIZE + 18
+    dmc_swatch_x = LEGEND_PADDING + 60
+    chips_col_x = dmc_swatch_x + LEGEND_SWATCH_SIZE + 16
+    text_col_x = chips_col_x + LEGEND_MAX_CHIPS * (LEGEND_CHIP_SIZE + LEGEND_CHIP_GAP) + 14
 
-    for i, color in enumerate(palette_stats):
+    for i, group in enumerate(grouped_stats):
         row_y0 = LEGEND_PADDING + i * LEGEND_ROW_HEIGHT
         row_y1 = row_y0 + LEGEND_ROW_HEIGHT
 
@@ -239,8 +240,7 @@ def render_legend_image(palette_stats, width=620):
 
         row_center_y = (row_y0 + row_y1) / 2
 
-        # Символ
-        symbol_text = str(color["symbol"])
+        symbol_text = str(group["symbol"])
         bbox = draw.textbbox((0, 0), symbol_text, font=font_symbol)
         text_h = bbox[3] - bbox[1]
         draw.text(
@@ -250,31 +250,29 @@ def render_legend_image(palette_stats, width=620):
             font=font_symbol,
         )
 
-        # Превью цвета схемы
         swatch_y0 = row_center_y - LEGEND_SWATCH_SIZE / 2
         swatch_y1 = row_center_y + LEGEND_SWATCH_SIZE / 2
         draw.rectangle(
-            [scheme_swatch_x, swatch_y0, scheme_swatch_x + LEGEND_SWATCH_SIZE, swatch_y1],
-            fill=color["rgb"],
+            [dmc_swatch_x, swatch_y0, dmc_swatch_x + LEGEND_SWATCH_SIZE, swatch_y1],
+            fill=group["dmc_rgb"],
             outline=(255, 255, 255, 60),
             width=1,
         )
 
-        # Превью цвета мулине DMC
-        if has_dmc:
+        chips = group["source_colors"][:LEGEND_MAX_CHIPS]
+        chip_y0 = row_center_y - LEGEND_CHIP_SIZE / 2
+        chip_y1 = row_center_y + LEGEND_CHIP_SIZE / 2
+        for j, source in enumerate(chips):
+            chip_x0 = chips_col_x + j * (LEGEND_CHIP_SIZE + LEGEND_CHIP_GAP)
+            chip_x1 = chip_x0 + LEGEND_CHIP_SIZE
             draw.rectangle(
-                [dmc_swatch_x, swatch_y0, dmc_swatch_x + LEGEND_SWATCH_SIZE, swatch_y1],
-                fill=color["dmc_rgb"],
+                [chip_x0, chip_y0, chip_x1, chip_y1],
+                fill=source["rgb"],
                 outline=(255, 255, 255, 60),
                 width=1,
             )
 
-        # Название и hex / номер DMC
-        if has_dmc:
-            title_line = f"DMC {color['dmc_code']} · {color['dmc_name']}"
-        else:
-            title_line = color["name"]
-
+        title_line = f"DMC {group['dmc_code']} · {group['dmc_name']}"
         draw.text(
             (text_col_x, row_y0 + 10),
             title_line,
@@ -283,7 +281,7 @@ def render_legend_image(palette_stats, width=620):
         )
         draw.text(
             (text_col_x, row_y0 + 30),
-            f"{color['hex'].upper()} · {color['percentage']:.1f}%",
+            f"{group['percentage']:.1f}%",
             fill=(160, 160, 171),
             font=font_small,
         )

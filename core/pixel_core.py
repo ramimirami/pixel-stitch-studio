@@ -354,6 +354,46 @@ def optimize_palette(img_rgb, target_w, target_h, max_k=32):
     )
 
 
+def reduce_palette_colors(processed_image, target_k):
+    """
+    Уменьшает количество цветов уже обработанной схемы до target_k,
+    объединяя визуально наиболее похожие цвета между собой.
+
+    processed_image: PIL.Image — схема, полученная из optimize_palette()
+    target_k: желаемое итоговое количество цветов
+
+    Возвращает новое PIL.Image с уменьшенным количеством цветов
+    (размер изображения не меняется — меняется только палитра).
+    """
+    img_np = np.array(processed_image.convert("RGB"))
+    height, width, _ = img_np.shape
+    pixels = img_np.reshape(-1, 3).astype(float)
+
+    unique_colors, inverse, counts = np.unique(
+        pixels, axis=0, return_inverse=True, return_counts=True
+    )
+    inverse = inverse.reshape(-1)
+
+    target_k = max(1, min(target_k, len(unique_colors)))
+
+    if target_k >= len(unique_colors):
+        return processed_image.copy()
+
+    # sample_weight = сколько пикселей было каждого уникального цвета —
+    # так более "весомые" (часто встречающиеся) цвета сильнее влияют
+    # на итоговое положение объединённого цвета
+    kmeans = KMeans(n_clusters=target_k, n_init=10, random_state=42)
+    kmeans.fit(unique_colors, sample_weight=counts)
+
+    new_centers = np.clip(kmeans.cluster_centers_, 0, 255).astype(np.uint8)
+    pixel_labels = kmeans.labels_[inverse]
+    new_pixels = new_centers[pixel_labels]
+
+    result = Image.fromarray(
+        new_pixels.reshape((height, width, 3)).astype(np.uint8), mode="RGB"
+    )
+    return result
+
 def get_palette_stats(img_rgb):
     """
     Анализирует изображение и возвращает список словарей со статистикой цветов,

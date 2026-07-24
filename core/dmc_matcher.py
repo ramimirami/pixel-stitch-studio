@@ -61,3 +61,50 @@ def match_dmc_colors(palette_stats):
         color["dmc_hex"] = match["hex"]
 
     return palette_stats
+
+def group_by_dmc(palette_stats):
+    """
+    Группирует цвета схемы по итоговой нити мулине DMC.
+
+    palette_stats: список из get_palette_stats() + assign_symbols() +
+                   match_dmc_colors() — то есть каждый элемент уже содержит
+                   "rgb", "hex", "percentage", "dmc_code", "dmc_name",
+                   "dmc_rgb", "dmc_hex".
+
+    Возвращает новый список — один элемент на каждую уникальную нить DMC,
+    отсортированный по убыванию суммарного покрытия:
+        "symbol"        — новый порядковый номер группы (1, 2, 3...)
+        "dmc_code", "dmc_name", "dmc_rgb", "dmc_hex" — сама нить DMC
+        "percentage"     — суммарный процент всех цветов схемы в группе
+        "source_colors"  — исходные цвета схемы, попавшие в эту нить:
+                            [{"rgb", "hex", "percentage"}, ...]
+    """
+    groups = {}
+
+    for color in palette_stats:
+        key = color["dmc_code"]
+
+        if key not in groups:
+            groups[key] = {
+                "dmc_code": color["dmc_code"],
+                "dmc_name": color["dmc_name"],
+                "dmc_rgb": color["dmc_rgb"],
+                "dmc_hex": color["dmc_hex"],
+                "percentage": 0.0,
+                "source_colors": [],
+            }
+
+        groups[key]["percentage"] += color["percentage"]
+        groups[key]["source_colors"].append({
+            "rgb": color["rgb"],
+            "hex": color["hex"],
+            "percentage": color["percentage"],
+        })
+
+    grouped_list = sorted(groups.values(), key=lambda g: g["percentage"], reverse=True)
+
+    for i, group in enumerate(grouped_list):
+        group["symbol"] = i + 1
+        group["source_colors"].sort(key=lambda c: c["percentage"], reverse=True)
+
+    return grouped_list
